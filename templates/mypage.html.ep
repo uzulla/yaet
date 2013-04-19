@@ -1,0 +1,110 @@
+% layout 'default';
+% use Data::Dumper;
+my page<hr>
+後で説明を色々書く
+<a href="<%= url_for('/update_photo'); %>">updatePhoto</a><br>
+<br>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script>
+function selimg(elm){
+    $(elm).addClass('selected-img');
+}
+
+function touchImg(e){
+    var target = e.target ;
+    selimg(target);
+}
+
+function listSelImg(){
+    console.log($('img.selected-img'));
+    list = [];
+    $('img.selected-img').each(function(){
+        list.push($(this).attr('data-large-image-url'));
+        console.log($(this).attr('data-large-image-url'));
+    });
+
+}
+
+function autoSelectFromStart(){
+    var tolot_max_page_num = 62;
+    photo_elms = $(".photo").get().reverse();
+
+    var i = 1;
+    var page = 1;
+    console.log('-start-');
+    var tmp_book_set = [];
+    var book_set_list = [];
+    $.each(photo_elms, function(){
+        //console.log('---');
+        //console.log($(this).attr('data-large-image-url'));
+        //console.log('page:'+page+'/num'+i);
+
+        $("span", $(this).parent()).text(i);
+
+        tmp_book_set.push($(this).attr('data-large-image-url'));
+
+        i++;
+        if(i>tolot_max_page_num){
+            var dl_link = $('<a>download link</a>');
+            dl_link.attr('data-img-url-list', tmp_book_set.join(','));
+            dl_link.click(function(){
+                var book_title = prompt('タイトルを入力してください', 'from instagram #'+page);
+                var elm = $(this);
+                var list = elm.attr('data-img-url-list').split(',');
+                console.log(list);
+                
+                var hidden_list = [];
+                hidden_list.push($('<input type="hidden" name="book_title">').attr('value', book_title));
+                $.each(list, function(){
+                    hidden_list.push($('<input type="hidden" name="images">').attr('value', this));
+                });
+                $('#dl_form').append(hidden_list);
+                $('#dl_form').submit();
+
+                $('#dl_form').html('');
+                return false;
+            });
+            dl_link.attr('href', '#');
+
+            $(this).parent().before($('<hr>'));
+            $(this).parent().before($('<div style="text-align:center"></div>').append(dl_link));
+
+            i=1;
+            book_set_list.push(tmp_book_set);
+            tmp_book_set = [];
+
+            page++;
+        }
+
+    });
+    console.log(book_set_list);
+    console.log(tmp_book_set);
+    console.log('-end-');
+}
+
+$(function () {
+    autoSelectFromStart();
+});
+
+</script>
+<style>
+    img {
+        border: solid 4px;
+    }
+    .selected-img {
+        border-color: red;
+    }
+</style>
+
+% if ($instagram_photo_list) {
+%   foreach my $i (@$instagram_photo_list) {
+      <div style="position:relative; display:inline-block; width:160px; height:160px;">
+        <img src="<%= $i->img_tmb_url %>" onclick="touchImg(event)" data-large-image-url="<%= $i->img_std_url %>" class="photo" >
+        <span class="page_num" style="position:absolute; margin-left:-100px;margin-top:50px;font-size:32px;color:white;">-</span>
+      </div>
+%   }   
+% }
+<form id="dl_form" action="<%= url_for('/create_zip'); %>" target="_blank" method="post"></form>
+
+
+<a href="<%= url_for('/auth/logout'); %>">logout</a>

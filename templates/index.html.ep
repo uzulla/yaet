@@ -1,0 +1,6 @@
+% layout 'default';
+  
+top page<br>
+後で説明を色々書く
+
+<a href="<%= url_for('/auth/instagram/authenticate'); %>">login by instagram</a>

@@ -1,0 +1,5 @@
+.DS_Store
+db.db
+tail_f.conf
+tmp/*
+tool/theme_img_dump/*
