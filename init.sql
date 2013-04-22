@@ -1,4 +1,6 @@
-create table user_account(
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE user_account(
     id integer PRIMARY KEY, 
     name text,
     avatar_img_url text,
@@ -7,8 +9,7 @@ create table user_account(
     created_at text,
     updated_at text
     );
-
-create table instagram_photo(
+CREATE TABLE instagram_photo(
     id integer PRIMARY KEY,
     instagram_user_id text,
     instagram_photo_id text,
@@ -23,4 +24,10 @@ create table instagram_photo(
     created_at text,
     updated_at text
     );
-
+CREATE TABLE session (
+        sid          VARCHAR(40) PRIMARY KEY,
+        data         TEXT,
+        expires      INTEGER UNSIGNED NOT NULL,
+        UNIQUE(sid)
+    );
+COMMIT;

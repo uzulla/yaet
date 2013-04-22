@@ -2,5 +2,12 @@
     instagram => {
         client_id     => '',
         client_secret => ''
+    },
+    mojo_secret => 'secret token',
+    base_url=>'http://hostname:3000/',
+    db => {
+        dsn => 'dbi:SQLite:'.$FindBin::RealBin.'/db.db',
+        username => '',
+        password => ''
     }
 }

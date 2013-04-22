@@ -16,25 +16,41 @@ use Coro;
 use FurlX::Coro;
 use List::MoreUtils;
 use XML::Simple;
+use DBIx::Handler;
 
 sub startup {
   my $self = shift;
 
   my $config = $self->plugin('Config');
-
-  $self->secret('Mojolicious placks');
+  $self->secret($config->{mojo_secret});
 
   my $db = TailF::Model->new(+{connect_info => ['dbi:SQLite:'.$FindBin::RealBin.'/db.db','','']});
+
   $self->helper( db => sub {return $db} );
 
   my $instagram = WebService::Instagram->new(
       {
           client_id       => $config->{instagram}->{client_id},
           client_secret   => $config->{instagram}->{client_secret},
-          redirect_uri    => 'http://tailf.cfe.jp:3000/',
+          redirect_uri    => $config->{base_url},
       }
   );
 
+  $self->plugin(
+    session => {
+      stash_key => 'session',
+      store     => [dbi => {dbh => $db->dbh}],
+      transport => 'cookie',
+      expires_delta => 1209600, #2 weeks.
+      init      => sub{
+        my ($self, $session) = @_;
+        $session->load;
+        if(!$session->sid){
+          $session->create;
+        }
+      },
+    }
+  );
 
   #/auth/instagram/authenticate
   $self->plugin( 'Web::Auth',
@@ -43,28 +59,9 @@ sub startup {
       secret      => $config->{instagram}->{client_secret},
       on_finished => sub {
           my ( $c, $access_token, $account_info ) = @_;
-
           warn Dumper($account_info);
-        #  $VAR1 = {
-        #   'data' => {
-        #             'website' => 'http://twitter.com/uzulla',
-        #             'id' => '188094',
-        #             'counts' => {
-        #                         'media' => '673',
-        #                         'follows' => '114',
-        #                         'followed_by' => '158'
-        #                       },
-        #             'full_name' => 'junichi ishida',
-        #             'profile_picture' => 'http://images.ak.instagram.com/profiles/profile_188094_75sq_1355162892.jpg',
-        #             'bio' => 'at tokyo japan',
-        #             'username' => 'uzulla'
-        #           },
-        #   'meta' => {
-        #             'code' => '200'
-        #           }
-        # };
+
           my $user = $c->db->single('user_account', +{instagram_id=> $account_info->{data}->{id}});
-          warn "logged in by ".$account_info->{data}->{username};
           unless($user){
             warn "new user account ".$account_info->{data}->{id};
             my $res = $c->db->insert('user_account', +{ 
@@ -77,8 +74,11 @@ sub startup {
               } );
             $user = $c->db->single('user_account', +{instagram_id=> $account_info->{data}->{id}});
           }
-          warn Dumper($user);
-          $c->session(user => $user);
+          warn Dumper($user->get_columns);
+
+          $c->stash('session')->data('user'=>$user->get_columns);
+
+          warn "logged in by ".$account_info->{data}->{username};
 
           $c->redirect_to('/mypage');
       },
@@ -90,44 +90,67 @@ sub startup {
     my $self = shift;
 
     $self->redirect_to('/mypage')
-      if($self->session('user'));
+      if($self->stash('session')->data('user'));
 
     return $self->render
   } => 'index');
 
+  $r->any('/erase' => sub{
+    my $self = shift;
+    my $user = $self->stash('session')->data('user');
+
+    unless($user){
+      $self->redirect_to('/');
+      return;
+    }
+
+    my $delete_instagram_photo_num = $self->db->delete('instagram_photo', +{instagram_user_id=> $user->{instagram_id}});
+    my $delete_user_account_num = $self->db->delete('user_account', +{id=> $user->{id}});
+
+    $self->redirect_to('/auth/logout');
+  });
+
+  $r->any('/auth/logout' => sub{
+    my $self = shift;
+    $self->stash('session')->clear;
+    $self->session(expires=>1);
+    $self->redirect_to('/');
+  });
+
   $r->any('/mypage' => sub {
     my $self = shift;
+    
+    my $user = $self->stash('session')->data('user');
 
-    my $_user = $self->db->single('user_account', +{id=> 1});
-    $self->session(user => $_user);
-    my $user = $self->session('user');
+    unless($user){
+      $self->redirect_to('/');
+      return;
+    }
 
-    $self->redirect_to('/')
-      unless($self->session('user'));
-
-    my @instagram_photo_list = $self->db->search('instagram_photo', +{ instagram_user_id => $user->instagram_id }, +{ limit => 1000, order_by => 'created_time DESC' } );
+    my @instagram_photo_list = $self->db->search('instagram_photo', +{ instagram_user_id => $user->{instagram_id} }, +{ limit => 10_000, order_by => 'created_time DESC' } );
 
     $self->stash(instagram_photo_list => \@instagram_photo_list);
 
     return $self->render
   } => 'mypage');
 
+
   $r->any('/update_photo' => sub {
     my $self = shift;
 
-    $self->redirect_to('/')
-      unless($self->session('user'));
+    my $user = $self->stash('session')->data('user');
 
-    my $user = $self->session('user');
+    unless($user){
+      $self->redirect_to('/');
+      return;
+    }
 
-    my $_user = $self->db->single('user_account', +{id=> 1});
-    $self->session(user => $_user);
-    $user = $self->session('user');
+    my $_user = $self->db->single('user_account', +{id=> $user->{id}});
 
-    $instagram->set_access_token( $user->instagram_token );
+    $instagram->set_access_token( $user->{instagram_token} );
     $self->stash(search_result => 0);
 
-    my @newest_instagram_photo = $self->db->search('instagram_photo', +{ instagram_user_id => $user->instagram_id }, +{ limit => 1, order_by => 'created_time DESC' } );
+    my @newest_instagram_photo = $self->db->search('instagram_photo', +{ instagram_user_id => $user->{instagram_id} }, +{ limit => 1, order_by => 'created_time DESC' } );
     my $limitter = 100;
     my $params = {};
     if( scalar @newest_instagram_photo > 0){
@@ -178,21 +201,19 @@ sub startup {
       }
     }
 
-    $self->redirect_to('/mypage');
+    return $self->render_json({status=>'ok'});
   });
 
-
-  $r->any('/auth/logout' => sub{
-    my $self = shift;
-    $self->session(expires=>1);
-    $self->redirect_to('/');
-    });
 
   $r->any('/create_zip/' => sub{
     my $self = shift;
 
-    my @images = $self->param('images');
+    my @images = $self->param('images[]');
     warn Dumper(@images);
+    unless (@images){
+      warn 'images empty';
+      die;
+    }
 
     my $book_title = $self->param('book_title');
     my $sub_title = $self->param('sub_title');
@@ -260,27 +281,20 @@ sub startup {
       $filename_num++;
     }
 
-    my ($zipfh, $zipfilename) = tempfile('zip_XXXX', DIR => "$ENV{MOJO_HOME}/tmp");
+    my $temporary_zip_filename = sub{join"",map{$_[rand@_]}1..40}->("a".."z",0..9,"A".."Z") . ".tlt";
+    open my $zipfh, "> $ENV{MOJO_HOME}/public/download_temporary/$temporary_zip_filename";
     $zip->writeToFileHandle($zipfh, 0);
     close $zipfh ;
-    warn 'zip filename: '.$zipfilename;
+    warn 'zip filename: '.$temporary_zip_filename;
 
     foreach my $filename (@tmp_filename_list){
       warn "delete img file: ". $filename;
       unlink $filename;
     }
-
-    $self->res->headers->content_disposition("attachment; filename=tailf_".time()."_archive.tlt");
      
-    my $zip_raw = read_file($zipfilename, { binmode => ':raw' } );
-
-    warn "delete zip file: ". $zipfilename;
-    unlink $zipfilename;
-
     # Render data
-    return $self->render_data($zip_raw, format => 'zip');
+    return $self->render_json({status=>'ok', url=>"$config->{base_url}download_temporary/$temporary_zip_filename"});
   });
 
 }
-
 1;

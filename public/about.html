@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TAILF - about</title>
+        <!-- Bootstrap -->
+        <link href="/css/bootstrap-amelia.css" rel="stylesheet" media="screen">
+        <style type="text/css">
+      body {
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+
+      /* Custom container */
+      .container-narrow {
+        margin: 0 auto;
+        max-width: 700px;
+      }
+      .container-narrow > hr {
+        margin: 30px 0;
+      }
+
+      /* Main marketing message and sign up button */
+      .jumbotron {
+        margin: 60px 0;
+        text-align: center;
+      }
+      .jumbotron h1 {
+        font-size: 72px;
+        line-height: 1;
+      }
+      .jumbotron .btn {
+        font-size: 21px;
+        padding: 14px 24px;
+      }
+
+      /* Supporting marketing content */
+      .marketing {
+        margin: 60px 0;
+      }
+      .marketing p + h4 {
+        margin-top: 28px;
+      }
+    </style>
+    </head>
+    <body>
+        
+<div class="container-narrow">
+
+  <div class="masthead">
+    <ul class="nav nav-pills pull-right">
+      <li><a href="/">Home</a></li>
+      <li class="active"><a class="" href="/about.html">About</a></li>
+      <li><a href="/help.html">Help</a></li>
+      <li><a href="http://twitter.com/uzulla/">Contact</a></li>
+      <li><a href="http://twitter.com/intent/tweet?text=@uzulla%20#tailf%20" target="_blank">Request</a></li>
+    </ul>
+    <h3 class="muted">TAILF</h3>
+  </div>
+
+  <hr>
+
+  <div class="jumbotron">
+    <h1>about</h1>
+    <p class="lead">this service is <a href="http://tolot.com/" target="_blank">TOLOT</a> photo book data(.tlt) generater from your <a href="http://instagram.com/" target="_blank">Instagram</a>.</p>
+    <p class="lead"> (<a href="http://instagram.com/" target="_blank">Instagram</a>の写真を手軽に<a href="http://tolot.com/" target="_blank">TOLOT</a>フォトブックデータ(.tlt)化するのをお手伝いします。)</p>
+    <p class="lead">（<a href="http://tolot.com/" target="_blank">TOLOT</a>は<a href="http://tolot.com/info/company/index.html" target="_blank">株式会社TOLOT</a>の提供しているサービスです）
+  </div>
+
+  <hr>
+
+  <div class="jumbotron">
+    <h1>HOW?</h1>
+    <p class="lead">1, <a href="<%= url_for('/auth/instagram/authenticate'); %>" taget="_blank">login by Instagram</a>.</p>
+    <p class="lead">2, download generated .tlt file.</p>
+    <p class="lead">3, open and order with <a href="http://tolot.com/app/pc/index.html" target="_blank">TOLOT PC/MAC client</a>.</p>
+    <p class="lead">4, wait a days!!.</p>
+  </div>
+
+
+
+  <div class="footer">
+    <p class="muted">&copy; uzulla</p>
+  </div>
+
+</div> <!-- /container -->
+
+        <script src="http://code.jquery.com/jquery.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+    </body>
+</html>
