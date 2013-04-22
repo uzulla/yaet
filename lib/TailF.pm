@@ -16,7 +16,6 @@ use Coro;
 use FurlX::Coro;
 use List::MoreUtils;
 use XML::Simple;
-use DBIx::Handler;
 
 sub startup {
   my $self = shift;
