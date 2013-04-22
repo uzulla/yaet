@@ -10,6 +10,8 @@
       <li><a href="http://twitter.com/uzulla/">Contact</a></li>
       <li><a href="http://twitter.com/intent/tweet?text=@uzulla%20#tailf%20" target="_blank">Request</a></li>
     </ul>
+    
+
     <h3 class="muted">TAILF</h3>
   </div>
 
@@ -21,6 +23,7 @@
     <a class="btn btn-large btn-success" href="<%= url_for('/auth/instagram/authenticate'); %>">login by instagram</a>
   </div>
 
+
   <div class="jumbotron">
     <h1>HOW?</h1>
     <p class="lead">1, <a href="<%= url_for('/auth/instagram/authenticate'); %>" taget="_blank">login by Instagram</a>.</p>
@@ -29,7 +32,13 @@
     <p class="lead">4, wait a days!!.</p>
   </div>
 
+
   <div class="footer">
+    <ul class="nav nav-pills pull-right">
+      <li style="margin-top:8px;"><iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftailf.cfe.jp%2F&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=207407482628591" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:110px; height:21px;" allowTransparency="true"></iframe></li>
+      <li style="margin-top:8px;"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://tailf.cfe.jp/" data-text="TAILF - create TOLOT photo book from instagram" data-via="uzulla" data-lang="ja" data-hashtags="tailf">ツイート</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></li>
+    </ul>
     <p class="muted">&copy; uzulla</p>
   </div>
 

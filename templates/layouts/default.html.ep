@@ -1,7 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TAILF</title>
+        <title>TAILF - create tolot photo book from Instagram</title>
+
+        <meta property="og:type" content="product">
+        <meta property="og:site_name" content="TAILF">
+        <meta property="fb:admins" content="574803063">
+
+        <meta property="og:url" content="http://tailf.cfe.jp/">
+        <meta property="og:title" content="TAILF - create TOLOT photo book from Instagram">
+        <meta property="og:image" content="http://tailf.cfe.jp/img/ogp.png">
+        <meta property="og:description" content="InstagramからフォトブックサービスのTOLOTで超手軽に印刷できるデータを生成します。">
+
+        <meta name="description" content="InstagramからフォトブックサービスのTOLOTで超手軽に印刷できるデータを生成します。">
+        <meta name="keywords" content="TOLOT,Photobook,Photo,Instagram,トロット,写真,カメラ">
+
         <!-- Bootstrap -->
         <link href="/css/bootstrap-amelia.css" rel="stylesheet" media="screen">
         <style type="text/css">
@@ -55,6 +68,7 @@
 </script>       
     </head>
     <body>
+
         <%= content %>
         <script src="/js/bootstrap.min.js"></script>
     </body>
