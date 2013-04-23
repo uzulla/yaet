@@ -1,0 +1,17 @@
+requires 'Mojolicious', 0;
+requires 'Mojolicious::Plugin::Web::Auth::OAuth2', 0;
+requires 'Crypt::SSLeay', 0;
+requires 'Teng', 0;
+requires 'DBD::SQLite', 0;
+requires 'DateTime', 0;
+requires 'DateTime::Format::MySQL', 0;
+requires 'WebService::Instagram', 0;
+requires 'Sub::Retry', 0;
+requires 'Archive::Zip', 0;
+requires 'File::Slurp', 0;
+requires 'Coro', 0;
+requires 'FurlX::Coro', 0;
+requires 'XML::Simple', 0;
+requires 'Mojolicious::Plugin::Session', 0;
+requires 'Net::Twitter::Lite::WithAPIv1_1', 0;
+requires 'Mojolicious::Plugin::Web::Auth ', 0;

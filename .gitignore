@@ -4,3 +4,5 @@ tail_f.conf
 tmp/*
 tool/theme_img_dump/*
 public/download_temporary/*
+local/
+.carton/

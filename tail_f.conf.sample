@@ -9,5 +9,10 @@
         dsn => 'dbi:SQLite:'.$FindBin::RealBin.'/db.db',
         username => '',
         password => ''
-    }
+    },
+    'hypnotoad' => { # of course optional
+        'listen' => [ 'http://127.0.0.1:3001' ],
+        'proxy' => 1,
+        heartbeat_timeout => 300, # very important
+    },
 }
