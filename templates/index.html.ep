@@ -19,17 +19,17 @@
 
   <div class="jumbotron">
     <h1>TAILF</h1>
-    <p class="lead">easy dump Instagram photo to real world.</p>
-    <a class="btn btn-large btn-success" href="<%= url_for('/auth/instagram/authenticate'); %>">login by instagram</a>
+    <p class="lead">Dump Instagram photos into real world easily.</p>
+    <a class="btn btn-large btn-success" href="<%= url_for('/auth/instagram/authenticate'); %>">login with Instagram</a>
   </div>
 
 
   <div class="jumbotron">
     <h1>HOW?</h1>
-    <p class="lead">1, <a href="<%= url_for('/auth/instagram/authenticate'); %>" taget="_blank">login by Instagram</a>.</p>
+    <p class="lead">1, <a href="<%= url_for('/auth/instagram/authenticate'); %>" taget="_blank">login with Instagram</a>.</p>
     <p class="lead">2, download generated .tlt file.</p>
     <p class="lead">3, open and order with <a href="http://tolot.com/app/pc/index.html" target="_blank">TOLOT PC/MAC client</a>.</p>
-    <p class="lead">4, wait a days!!.</p>
+    <p class="lead">4, wait a few days!!.</p>
   </div>
 
 
