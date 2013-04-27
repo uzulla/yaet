@@ -20,6 +20,8 @@ use XML::Simple;
 sub startup {
   my $self = shift;
 
+  $self->log->level('debug');
+
   my $config = $self->plugin('Config');
   $self->secret($config->{mojo_secret});
 
@@ -58,11 +60,11 @@ sub startup {
       secret      => $config->{instagram}->{client_secret},
       on_finished => sub {
           my ( $c, $access_token, $account_info ) = @_;
-          warn Dumper($account_info);
+          $self->app->log->debug("Instagram API response :".Dumper($account_info));
 
           my $user = $c->db->single('user_account', +{instagram_id=> $account_info->{data}->{id}});
           unless($user){
-            warn "new user account ".$account_info->{data}->{id};
+            $self->app->log->info("new user account Instagram:".$account_info->{data}->{id});
             my $res = $c->db->insert('user_account', +{ 
               name => $account_info->{data}->{username}, 
               instagram_token => $access_token,
@@ -73,11 +75,11 @@ sub startup {
               } );
             $user = $c->db->single('user_account', +{instagram_id=> $account_info->{data}->{id}});
           }
-          warn Dumper($user->get_columns);
+          $self->app->log->debug("user_account row :".Dumper($user->get_columns));
 
           $c->stash('session')->data('user'=>$user->get_columns);
 
-          warn "logged in by ".$account_info->{data}->{username};
+          $self->app->log->info("logged in ".$account_info->{data}->{username}." by Instagram");
 
           $c->redirect_to('/mypage');
       },
@@ -111,6 +113,7 @@ sub startup {
 
   $r->any('/auth/logout' => sub{
     my $self = shift;
+    $self->app->log->info('user logout.');
     $self->stash('session')->clear;
     $self->session(expires=>1);
     $self->redirect_to('/');
@@ -153,7 +156,8 @@ sub startup {
     my $limitter = 100;
     my $params = {};
     if( scalar @newest_instagram_photo > 0){
-      warn 'add min time stamp';
+      $self->app->log->debug("add min time stamp");
+
       $params = {'min_timestamp'=>$newest_instagram_photo[0]->created_time + 1}
     }
 
@@ -163,7 +167,7 @@ sub startup {
       $limitter--;
       foreach my $i (@{$search_result->{data}}) {
         #save DB
-        warn "save img $i->{images}->{thumbnail}->{url} \n";
+        $self->app->log->debug("save img $i->{images}->{thumbnail}->{url} \n");
         my $res = $self->db->insert('instagram_photo', +{ 
           instagram_user_id => $i->{user}->{id},
           instagram_photo_id => $i->{id},
@@ -183,16 +187,16 @@ sub startup {
       my $next_max_id = $search_result->{pagination}->{next_max_id};
 
       unless($next_max_id){
-        warn 'next_max_id notfound last!';
+        $self->app->log->debug('next_max_id notfound last!');
         last;
       }
 
       $search_result = retry 5, 2, sub {
-        warn 'try instagram :' . $next_max_id;
+        $self->app->log->debug('try instagram :' . $next_max_id);
         $instagram->request( 'https://api.instagram.com/v1/users/self/media/recent', { max_id => $next_max_id } ); 
       };
       unless($search_result){
-        warn "Instagram request error give up";
+        $self->app->log->warn("Instagram request error give up");
       }
 
       if($limitter < 0 ){
@@ -208,9 +212,9 @@ sub startup {
     my $self = shift;
 
     my @images = $self->param('images[]');
-    warn Dumper(@images);
+    $self->app->log->debug("request images list: ".Dumper(@images));
     unless (@images){
-      warn 'images empty';
+      $self->app->log->warn('images empty');
       die;
     }
 
@@ -233,22 +237,21 @@ sub startup {
         my $response = $ua->get($img);
         if ($response->is_success) {
           my $idx =  List::MoreUtils::firstidx { $_ eq $img } @images;
-          warn "dl success : $idx";
+          $self->app->log->debug( "dl success : $idx" );
           my ($fh, $filename) = tempfile('img_XXXX', DIR => "$ENV{MOJO_HOME}/tmp");
           print $fh $response->decoded_content;
           $tmp_filename_list[$idx] = $filename;
           close $fh;
-        }
-        else {
-          warn "dl fail";
+        } else {
+          $self->app->log->warn("Image download fail url-> $img");
           die $response->status_line;
         }
       }
     }
     $_->join for @coros; # wait done.
 
-    warn 'dl complete';
-    warn Dumper(@tmp_filename_list);
+    $self->app->log->info('image dl complete');
+    $self->app->log->debug(Dumper(@tmp_filename_list));
 
     # make zip
     my $zip = Archive::Zip->new();
@@ -284,14 +287,15 @@ sub startup {
     open my $zipfh, "> $ENV{MOJO_HOME}/public/download_temporary/$temporary_zip_filename";
     $zip->writeToFileHandle($zipfh, 0);
     close $zipfh ;
-    warn 'zip filename: '.$temporary_zip_filename;
+
+    $self->app->log->info('zip filename: '.$temporary_zip_filename);
 
     foreach my $filename (@tmp_filename_list){
-      warn "delete img file: ". $filename;
+      $self->app->log->debug( "delete img file: ". $filename );
       unlink $filename;
     }
-     
-    # Render data
+
+    $self->app->log->info("tlt file create done. redirecting to : $config->{base_url}download_temporary/$temporary_zip_filename");
     return $self->render_json({status=>'ok', url=>"$config->{base_url}download_temporary/$temporary_zip_filename"});
   });
 

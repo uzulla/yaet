@@ -18,7 +18,7 @@
   <hr>
 
   <div class="jumbotron">
-    <a class="btn btn-large btn-success" href="#" onclick="updateData()">update data.</a>
+    <a class="btn btn-large btn-success" href="#" onclick="track_update_data();updateData()">update data.</a>
 
 % if ($instagram_photo_list) {
 %   foreach my $i (@$instagram_photo_list) {
@@ -60,6 +60,7 @@ function updateData(){
 }
 
 function downloadTlt(book_title, list){
+    track_download_tlt_file();
     (function(book_title, list){
         $.ajax({
             url: '<%= url_for('/create_zip'); %>',
