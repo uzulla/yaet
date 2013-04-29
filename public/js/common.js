@@ -1,6 +1,6 @@
 function block() {
     $.blockUI({
-        message:'<img src="img/loading.gif" width="112" height="150"><br>please wait!!<br>(verrrry long time require...)',
+        message:'<img src="/img/loading.gif" width="112" height="150"><br>please wait!!<br>(verrrry long time require...)',
         css:{
             border:'none',
             lineHeight:'60px',
