@@ -6,3 +6,6 @@ tool/theme_img_dump/*
 public/download_temporary/*
 local/
 .carton/
+log/
+hypnotoad.pid
+
