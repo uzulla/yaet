@@ -1,10 +1,8 @@
 % layout 'default';
 
 <div class="container-narrow">
-
   <div class="masthead">
     <ul class="nav nav-pills pull-right">
-      <li><a href="/">Home</a></li>
       <li><a href="/about.html">About</a></li>
       <li><a href="/help.html">Help</a></li>
       <li><a href="http://twitter.com/uzulla/">Contact</a></li>
@@ -12,7 +10,7 @@
       <li><a href="#" onclick="eraseData();return false;">Erase</a></li>
       <li><a href="<%= url_for('/auth/logout'); %>">logout</a></li>
     </ul>
-    <h3 class="muted">TAILF</h3>
+    <h3 class="muted">TAILF (facebook)</h3>
   </div>
 
   <hr>
