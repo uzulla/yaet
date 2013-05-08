@@ -153,7 +153,7 @@ sub startup {
     $self->stash(search_result => 0);
 
     my @newest_instagram_photo = $self->db->search('instagram_photo', +{ instagram_user_id => $user->{instagram_id} }, +{ limit => 1, order_by => 'created_time DESC' } );
-    my $limitter = 100;
+    my $limitter = 5000;
     my $params = {};
     if( scalar @newest_instagram_photo > 0){
       $self->app->log->debug("add min time stamp");
@@ -200,6 +200,7 @@ sub startup {
       }
 
       if($limitter < 0 ){
+        $self->app->log->warn("HIT INSTAGRAM LIMITTER!!!!");
         last;
       }
     }
