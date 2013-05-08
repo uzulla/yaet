@@ -194,20 +194,25 @@ sub startup {
       last if scalar(@{$search_result->{data}}) < 1 ;
 
       foreach my $i (@{$search_result->{data}}) {
-        #save DB
-        $self->app->log->debug("save img $i->{src}");
-        my $res = $self->db->insert('facebook_photo', +{ 
-          facebook_user_id => $_user->facebook_id,
-          facebook_object_id => $i->{object_id},
-          img_std_url => $i->{src_big},
-          img_std_size => $i->{src_big_width}."x".$i->{src_big_height},
-          img_tmb_url => $i->{src},
-          img_tmb_size => $i->{src_width}."x".$i->{src_height},
-          created_time => $i->{created},
-          modified_time => $i->{modified},
-          created_at=>0,
-          updated_at=>0 
-          } );
+        unless( $self->db->single('facebook_photo', +{'facebook_object_id'=>$i->{object_id}} ) ){
+          $self->app->log->debug("save img $i->{images}->{thumbnail}->{url}");
+          $self->app->log->debug("save img $i->{src}");
+          my $res = $self->db->insert('facebook_photo', +{ 
+            facebook_user_id => $_user->facebook_id,
+            facebook_object_id => $i->{object_id},
+            img_std_url => $i->{src_big},
+            img_std_size => $i->{src_big_width}."x".$i->{src_big_height},
+            img_tmb_url => $i->{src},
+            img_tmb_size => $i->{src_width}."x".$i->{src_height},
+            created_time => $i->{created},
+            modified_time => $i->{modified},
+            created_at=>0,
+            updated_at=>0 
+            } );
+        }else{
+          $self->app->log->warn("try save dup img. $i->{images}->{thumbnail}->{url}. skipped");
+        }
+
       }
 
       $offset = $offset +$FACEBOOK_LIMIT_NUM ;
@@ -219,8 +224,6 @@ sub startup {
 
   $r->any('/' => sub {
     my $self = shift;
-
-    warn Dumper($self->stash('session')->data('user'));
 
     if($self->stash('session')->data('user')){
       if($self->stash('session')->data('user')->{instagram_id}){
@@ -290,7 +293,8 @@ sub startup {
     $self->stash(search_result => 0);
 
     my @newest_instagram_photo = $self->db->search('instagram_photo', +{ instagram_user_id => $user->{instagram_id} }, +{ limit => 1, order_by => 'created_time DESC' } );
-    my $limitter = 100;
+
+    my $limitter = 1000;
     my $params = {};
     if( scalar @newest_instagram_photo > 0){
       $self->app->log->debug("add min time stamp");
@@ -303,22 +307,25 @@ sub startup {
     while(1){
       $limitter--;
       foreach my $i (@{$search_result->{data}}) {
-        #save DB
-        $self->app->log->debug("save img $i->{images}->{thumbnail}->{url}");
-        my $res = $self->db->insert('instagram_photo', +{ 
-          instagram_user_id => $i->{user}->{id},
-          instagram_photo_id => $i->{id},
-          link => $i->{link},
-          img_std_url => $i->{images}->{standard_resolution}->{url},
-          img_std_size => $i->{images}->{standard_resolution}->{width}."x".$i->{images}->{standard_resolution}->{height},
-          img_low_url => $i->{images}->{low_resolution}->{url},
-          img_low_size => $i->{images}->{low_resolution}->{width}."x".$i->{images}->{low_resolution}->{height},
-          img_tmb_url => $i->{images}->{thumbnail}->{url},
-          img_tmb_size => $i->{images}->{thumbnail}->{width}."x".$i->{images}->{thumbnail}->{height},
-          created_time => $i->{created_time},
-          created_at=>0,
-          updated_at=>0 
-          } );
+        unless( $self->db->single('instagram_photo', +{'instagram_photo_id'=>$i->{id}} ) ){
+          $self->app->log->debug("save img $i->{images}->{thumbnail}->{url}");
+          my $res = $self->db->insert('instagram_photo', +{ 
+            instagram_user_id => $i->{user}->{id},
+            instagram_photo_id => $i->{id},
+            link => $i->{link},
+            img_std_url => $i->{images}->{standard_resolution}->{url},
+            img_std_size => $i->{images}->{standard_resolution}->{width}."x".$i->{images}->{standard_resolution}->{height},
+            img_low_url => $i->{images}->{low_resolution}->{url},
+            img_low_size => $i->{images}->{low_resolution}->{width}."x".$i->{images}->{low_resolution}->{height},
+            img_tmb_url => $i->{images}->{thumbnail}->{url},
+            img_tmb_size => $i->{images}->{thumbnail}->{width}."x".$i->{images}->{thumbnail}->{height},
+            created_time => $i->{created_time},
+            created_at=>0,
+            updated_at=>0 
+            } );
+        }else{
+          $self->app->log->warn("try save dup img. $i->{images}->{thumbnail}->{url}. skipped");
+        }
       }
 
       my $next_max_id = $search_result->{pagination}->{next_max_id};
@@ -362,7 +369,7 @@ sub startup {
     my $counter = -1;
 
     my @coros;
-    my $semaphore = Coro::Semaphore->new(6); # 4 並列まで
+    my $semaphore = Coro::Semaphore->new(4); # 4 並列まで
     my $ua = FurlX::Coro->new(timeout => 10);
     foreach my $img (@images){
       $counter++;
