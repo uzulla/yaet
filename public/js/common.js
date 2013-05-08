@@ -18,3 +18,7 @@ function block() {
 function unblock() {
     $.unblockUI();
 }
+
+//for InternetExplorer(don't have console.log())
+if(typeof console != 'object'){ var console = {'log': function(){}}; } // hehe
+
