@@ -62,6 +62,12 @@ sub startup {
       module      => 'Instagram',
       key         => $config->{instagram}->{client_id},
       secret      => $config->{instagram}->{client_secret},
+      on_error    => sub {
+          my ( $c, @__ ) = @_;
+          my ( $error_info ) = @__;
+          $self->app->log->info("Instagram auth error $error_info");
+          $c->redirect_to('/');
+      },
       on_finished => sub {
           my ( $c, $access_token, $account_info ) = @_;
           $self->app->log->debug("Instagram API response :".Dumper($account_info));
@@ -95,6 +101,12 @@ sub startup {
       key         => $config->{facebook}->{app_id},
       secret      => $config->{facebook}->{app_secret},
       scope       => 'user_photos',
+      on_error    => sub {
+          my ( $c, @__ ) = @_;
+          my ( $error_info ) = @__;
+          $self->app->log->info("Facebook auth error $error_info");
+          $c->redirect_to('/');
+      },
       on_finished => sub {
           my ( $c, $access_token, $account_info ) = @_;
           $self->app->log->debug("Facebook API response :".Dumper($account_info));
@@ -127,6 +139,12 @@ sub startup {
       module      => 'Google',
       key         => $config->{google}->{client_id},
       secret      => $config->{google}->{client_secret},
+      on_error    => sub {
+          my ( $c, @__ ) = @_;
+          my ( $error_info ) = @__;
+          $self->app->log->info("Picasa auth error $error_info");
+          $c->redirect_to('/');
+      },
       on_finished => sub {
           my ( $c, $access_token, $account_info ) = @_;
           warn Dumper($c);
