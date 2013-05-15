@@ -19,7 +19,7 @@
 
   <div class="jumbotron">
     <h1>TAILF</h1>
-    <p class="lead">Dump Instagram photos into real world easily.</p>
+    <p class="lead">Dump Instagram(or Facebook, Picasa Google+) photos into real world easily.</p>
     <p>
       <a class="btn btn-large btn-success" href="<%= url_for('/auth/instagram/authenticate'); %>" onclick="track_login()">login with Instagram</a>
     </p>
