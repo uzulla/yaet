@@ -27,6 +27,10 @@
     <p>
       <a class="btn btn-large btn-success" href="<%= url_for('/auth/facebook/authenticate'); %>" onclick="track_login()">login with Facebook</a>
     </p>
+    <p>or</p>
+    <p>
+      <a class="btn btn-large btn-success" href="<%= url_for('/auth/google/authenticate'); %>" onclick="track_login()">login with Google(Picasa/Google Plus)</a>
+    </p>
 
   </div>
 

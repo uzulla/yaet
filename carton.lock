@@ -3176,6 +3176,62 @@
          "target" : "DateTime::Format::MySQL",
          "version" : "0.04"
       },
+      "DateTime::Format::RFC3339" : {
+         "dist" : "DateTime-Format-RFC3339-v1.0.5",
+         "mymeta" : {
+            "abstract" : "Parse and format RFC3339 datetime strings",
+            "author" : [
+               "Eric Brine <ikegami@adaelis.com>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.56, CPAN::Meta::Converter version 2.130880, CPAN::Meta::Converter version 2.120921",
+            "license" : [
+               "unknown"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "DateTime-Format-RFC3339",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "0"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "0"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "DateTime" : "0",
+                     "Test::More" : "0",
+                     "version" : "0"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "v1.0.5"
+         },
+         "name" : "DateTime::Format::RFC3339",
+         "pathname" : "I/IK/IKEGAMI/DateTime-Format-RFC3339-v1.0.5.tar.gz",
+         "provides" : {
+            "DateTime::Format::RFC3339" : {
+               "file" : "DateTime/Format/RFC3339.pm",
+               "version" : "v1.0.5"
+            }
+         },
+         "target" : "DateTime::Format::RFC3339",
+         "version" : "v1.0.5"
+      },
       "DateTime::Format::Strptime" : {
          "dist" : "DateTime-Format-Strptime-1.54",
          "mymeta" : {

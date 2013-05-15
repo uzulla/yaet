@@ -7,7 +7,7 @@ use Data::Dumper;
 use URI;
 
 my $f = new Furl;
-my $google_user_name = "kgw5o.kawakami";
+my $google_user_name = "114651309588721895816";
 
 my $uri = URI->new("https://picasaweb.google.com");
 $uri->path( 'data/feed/api/user/' . $google_user_name );
@@ -15,7 +15,7 @@ $uri->path( 'data/feed/api/user/' . $google_user_name );
 $uri->query_form(
     "kind" => "photo",
     "start-index" => 1,
-    "max-results" => 1,
+    "max-results" => 10,
     #"fields" => "entry[xs:dateTime(published)>=xs:dateTime('2012-01-01T00:00:00.000Z')](gphoto:id,title,gphoto:timestamp,published,media:group(media:thumbnail,media:content))",
     "fields" => "entry(gphoto:id,title,gphoto:timestamp,published,media:group(media:thumbnail,media:content))",
     "imgmax" => 800

@@ -9,9 +9,14 @@ CREATE TABLE user_account(
     instagram_id text,
     facebook_token text,
     facebook_id text,
+    picasa_token text,
+    picasa_id text,
     created_at text,
     updated_at text
     );
+--ALTER TABLE user_account ADD COLUMN picasa_token text;
+--ALTER TABLE user_account ADD COLUMN picasa_id text;
+
 DROP TABLE instagram_photo;
 CREATE TABLE instagram_photo(
     id integer PRIMARY KEY,
@@ -39,6 +44,19 @@ CREATE TABLE facebook_photo(
     img_tmb_size text,
     created_time text,
     modified_time text,
+    created_at text,
+    updated_at text
+    );
+DROP TABLE picasa_photo;
+CREATE TABLE picasa_photo(
+    id integer PRIMARY KEY,
+    picasa_user_id text,
+    picasa_gphoto_id text,
+    img_std_url text,
+    img_std_size text,
+    img_tmb_url text,
+    img_tmb_size text,
+    created_time text,
     created_at text,
     updated_at text
     );

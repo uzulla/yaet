@@ -16,3 +16,4 @@ requires 'Mojolicious::Plugin::Session', 0;
 requires 'Net::Twitter::Lite::WithAPIv1_1', 0;
 requires 'Mojolicious::Plugin::Web::Auth ', 0;
 requires 'Date::Parse', 0;
+requires 'DateTime::Format::RFC3339', 0;
