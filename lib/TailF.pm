@@ -147,10 +147,6 @@ sub startup {
       },
       on_finished => sub {
           my ( $c, $access_token, $account_info ) = @_;
-          warn Dumper($c);
-          warn Dumper($access_token);
-          warn Dumper($account_info);
-
           $self->app->log->debug("Google API response :".Dumper($account_info));
 
           my $user = $c->db->single('user_account', +{picasa_id=> $account_info->{id}});
@@ -170,7 +166,7 @@ sub startup {
 
           $c->stash('session')->data('user'=>$user->get_columns);
 
-          $self->app->log->info("logged in ".$account_info->{data}->{username}." by Picasa");
+          $self->app->log->info("logged in ".$account_info->{id}." by Picasa");
 
           $c->redirect_to('/mypage/picasa');
       },
@@ -370,7 +366,6 @@ sub startup {
 
       foreach my $i (@{$search_result->{data}}) {
         unless( $self->db->single('facebook_photo', +{'facebook_object_id'=>$i->{object_id}} ) ){
-          $self->app->log->debug("save img $i->{images}->{thumbnail}->{url}");
           $self->app->log->debug("save img $i->{src}");
           my $res = $self->db->insert('facebook_photo', +{ 
             facebook_user_id => $_user->facebook_id,
@@ -421,6 +416,8 @@ sub startup {
     }
 
     my $delete_instagram_photo_num = $self->db->delete('instagram_photo', +{instagram_user_id=> $user->{instagram_id}});
+    my $delete_facebook_photo_num = $self->db->delete('facebook_photo', +{facebook_user_id=> $user->{facebook_id}});
+    my $delete_picasa_photo_num = $self->db->delete('picasa_photo', +{picasa_user_id=> $user->{picasa_id}});
     my $delete_user_account_num = $self->db->delete('user_account', +{id=> $user->{id}});
 
     $self->redirect_to('/auth/logout');
