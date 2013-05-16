@@ -14,9 +14,6 @@ CREATE TABLE user_account(
     created_at text,
     updated_at text
     );
---ALTER TABLE user_account ADD COLUMN picasa_token text;
---ALTER TABLE user_account ADD COLUMN picasa_id text;
-
 DROP TABLE instagram_photo;
 CREATE TABLE instagram_photo(
     id integer PRIMARY KEY,
