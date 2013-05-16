@@ -1,6 +1,18 @@
+var loading_images = [
+    '/img/loading0.gif',
+    '/img/loading1.gif',
+    '/img/loading2.gif',
+];
+$(function () {
+    $.each(loading_images,function (){
+        (new Image()).src =this;
+    });
+});
+
 function block() {
+    var imgurl = loading_images[Math.floor(Math.random() * loading_images.length)];
     $.blockUI({
-        message:'<img src="/img/loading.gif" width="112" height="150"><br>please wait!!<br>(verrrry long time require...)',
+        message:'<img src="'+imgurl+'" width="112" height="150"><br>please wait!!<br>(verrrry long time require...)',
         css:{
             border:'none',
             lineHeight:'60px',

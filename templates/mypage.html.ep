@@ -143,7 +143,6 @@ function autoSelectFromStart(){
 $(function () {
     autoSelectFromStart();
     $("img.photo").lazyload();
-    (new Image()).src = 'img/loading.gif';// preload
 });
 
 </script>
