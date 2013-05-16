@@ -1,25 +1,22 @@
 package TailF;
 use Mojo::Base 'Mojolicious';
 use Mojolicious::Plugin::Web::Auth::OAuth2;
-use TailF::Model;
-use Net::Twitter::Lite::WithAPIv1_1;
-use DateTime;
-use Data::Dumper;
+
 use WebService::Instagram;
-use Try::Tiny;
-use Sub::Retry;
-use LWP::UserAgent;
-use File::Temp qw/tempfile/;
-use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
-use File::Slurp;
-use Coro;
-use FurlX::Coro;
-use Furl;
-use List::MoreUtils;
-use XML::Simple;
-use Date::Parse;
+use Net::Twitter::Lite::WithAPIv1_1;
+
+use DateTime;
 use DateTime::Format::RFC3339;
+use Date::Parse;
+
+use Sub::Retry;
+use Furl;
+
 use JSON qw/encode_json decode_json/;
+use Data::Dumper;
+
+use TailF::Model;
+use CFE::TOLOT::PhotoBook;
 
 sub startup {
   my $self = shift;
@@ -530,88 +527,22 @@ sub startup {
     my $self = shift;
 
     my @images = $self->param('images[]');
-    $self->app->log->debug("request images list: ".Dumper(@images));
     unless (@images){
       $self->app->log->warn('images empty');
       die;
     }
 
-    my $book_title = $self->param('book_title');
-    my $sub_title = $self->param('sub_title');
+    my $tlt = new CFE::TOLOT::PhotoBook( {
+      book_title    => "".$self->param('book_title'),
+      sub_title     => "".$self->param('sub_title'),
+      zip_output_dir=> "$ENV{MOJO_HOME}/public/download_temporary",
+      temporary_dir => "$ENV{MOJO_HOME}/tmp",
+      data_base_dir => "$ENV{MOJO_HOME}/data/tolot",
+      debug         => 1
+    } );
 
-    my @tmp_filename_list = ();
-    my $counter = -1;
-
-    my @coros;
-    my $semaphore = Coro::Semaphore->new(4); # 4 並列まで
-    my $ua = FurlX::Coro->new(timeout => 10);
-    foreach my $img (@images){
-      $counter++;
-      if($counter > 100){last;}
-      push @coros, async {
-        my $guard = $semaphore->guard;
-        $self->app->log->debug("try fetching $img");
-        
-        my $response = $ua->get($img);
-        if ($response->is_success) {
-          my $idx =  List::MoreUtils::firstidx { $_ eq $img } @images;
-          $self->app->log->debug( "dl success : $idx" );
-          my ($fh, $filename) = tempfile('img_XXXX', DIR => "$ENV{MOJO_HOME}/tmp");
-          print $fh $response->decoded_content;
-          $tmp_filename_list[$idx] = $filename;
-          close $fh;
-        } else {
-          $self->app->log->warn("Image download fail url-> $img");
-          die $response->status_line;
-        }
-      }
-    }
-    $_->join for @coros; # wait done.
-
-    $self->app->log->info('image dl complete');
-    $self->app->log->debug(Dumper(@tmp_filename_list));
-
-    # make zip
-    my $zip = Archive::Zip->new();
-
-    #tolot meta data
-    $zip->addDirectory('tolot/OEBPS/');
-    $zip->addDirectory('tolot/OEBPS/images/');
-    $zip->addDirectory('tolot/OEBPS/texts/');
-    $zip->addDirectory('tolot/OEBPS/tolot/');
-
-    $zip->addFile( "$ENV{MOJO_HOME}/data/tolot/content.opf", 'tolot/OEBPS/content.opf');
-
-    for(my $i=0;$i<62;$i++){
-      $zip->addFile( "$ENV{MOJO_HOME}/data/tolot/texts/page$i.xhtml", "tolot/OEBPS/texts/page$i.xhtml");
-    }
-
-    my @theme_code_list = List::Util::shuffle ("5121","5122","5123","5124","5125","5126","5127","5128","5129","5130","5131","5132","6145","6146","6147","6148","6149","6150","6151","6152");
-    my $book_xml = XMLin("$ENV{MOJO_HOME}/data/tolot/book.xml");
-    $book_xml->{title} = $book_title;
-    $book_xml->{themeCode} = $theme_code_list[0];
-    $book_xml->{subTitle} = $sub_title  ;
-    $zip->addString( XMLout( $book_xml, NoAttr => 1, RootName => 'book',XMLDecl => "<?xml version='1.0' encoding='UTF-8'?>" ), 'tolot/OEBPS/tolot/book.xml');
-
-    $zip->addFile( "$ENV{MOJO_HOME}/data/tolot/info.xml", 'tolot/OEBPS/tolot/info.xml');
-
-    my $filename_num = 0;
-    foreach my $filename (@tmp_filename_list){
-      my $file_member = $zip->addFile( $filename, "tolot/OEBPS/images/$filename_num.jpg");
-      $filename_num++;
-    }
-
-    my $temporary_zip_filename = sub{join"",map{$_[rand@_]}1..40}->("a".."z",0..9,"A".."Z") . ".tlt";
-    open my $zipfh, "> $ENV{MOJO_HOME}/public/download_temporary/$temporary_zip_filename";
-    $zip->writeToFileHandle($zipfh, 0);
-    close $zipfh ;
-
-    $self->app->log->info('zip filename: '.$temporary_zip_filename);
-
-    foreach my $filename (@tmp_filename_list){
-      $self->app->log->debug( "delete img file: ". $filename );
-      unlink $filename;
-    }
+    $tlt->set_image_file_list_by_url_list(@images);
+    my $temporary_zip_filename = $tlt->create_zip;
 
     $self->app->log->info("tlt file create done. redirecting to : $config->{base_url}download_temporary/$temporary_zip_filename");
     return $self->render_json({status=>'ok', url=>"$config->{base_url}download_temporary/$temporary_zip_filename"});
