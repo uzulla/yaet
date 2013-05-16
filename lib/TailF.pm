@@ -152,13 +152,13 @@ sub startup {
           my $user = $c->db->single('user_account', +{picasa_id=> $account_info->{id}});
           unless($user){
             $self->app->log->info("new user account Google:".$account_info->{id});
-            my $res = $c->db->insert('user_account', +{ 
-              name => $account_info->{data}->{username}, 
+            my $res = $c->db->insert('user_account', +{
+              name => $account_info->{displayName},
               picasa_token => $access_token,
-              picasa_id => $account_info->{id}, 
-              avatar_img_url => $account_info->{image}, 
+              picasa_id => $account_info->{id},
+              avatar_img_url => $account_info->{image}->{url},
               created_at=>0,
-              updated_at=>0 
+              updated_at=>0
               } );
             $user = $c->db->single('user_account', +{picasa_id=> $account_info->{id}});
           }
