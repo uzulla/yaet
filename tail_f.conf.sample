@@ -21,6 +21,7 @@
     'hypnotoad' => { # of course optional
         'listen' => [ 'http://127.0.0.1:3001' ],
         'proxy' => 1,
-        heartbeat_timeout => 300, # very important
+        heartbeat_timeout => 1200, # very important
+        inactivity_timeout => 600, # very important
     },
 }
