@@ -3,6 +3,14 @@
         client_id     => '',
         client_secret => ''
     },
+    google => {
+        client_id     => '.apps.googleusercontent.com',
+        client_secret => ''
+    },
+    facebook => {
+        app_id => '',
+        app_secret => ''
+    },
     mojo_secret => 'secret token',
     base_url=>'http://hostname:3000/',
     db => {
