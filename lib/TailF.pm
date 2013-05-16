@@ -399,7 +399,9 @@ sub startup {
       if($self->stash('session')->data('user')->{instagram_id}){
         $self->redirect_to('/mypage')
       }elsif($self->stash('session')->data('user')->{facebook_id}){
-        $self->redirect_to('/facebook/mypage')
+        $self->redirect_to('/mypage/facebook')
+      }elsif($self->stash('session')->data('user')->{picasa_id}){
+        $self->redirect_to('/mypage/picasa')
       }
     }
 
