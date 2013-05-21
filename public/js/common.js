@@ -2,6 +2,7 @@ var loading_images = [
     '/img/loading0.gif',
     '/img/loading1.gif',
     '/img/loading2.gif',
+    '/img/asyncloading2.gif'
 ];
 $(function () {
     $.each(loading_images,function (){
