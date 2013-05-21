@@ -131,6 +131,29 @@ sub startup {
     $self->redirect_to('/');
   });
 
+  $r->any('/set_ignore_flag/' => sub{
+    my $self = shift;
+    my $img_url = $self->param('image');
+    my $flag = $self->param('flag');
+    my $table = $self->param('data_source_table');
+    $self->app->log->debug("set ignore flag : $table $flag $img_url ");
+
+    my $_user = $self->stash('session')->data('user');
+    my $user = $self->db->single('user_account', +{id=> $_user->{id}});
+    return $self->render_json({status=>'ng', text=>'session not found.' }) unless $user;
+
+    my $update_row_count=0;
+    if($table eq 'instagram_photo'){
+      $update_row_count = $self->db->update($table, { ignore_flag => $flag }, { img_std_url => $img_url, instagram_user_id => $user->instagram_id } );
+    }elsif($table eq 'facebook_photo'){
+      $update_row_count = $self->db->update($table, { ignore_flag => $flag }, { img_std_url => $img_url, facebook_user_id => $user->facebook_id } );
+    }elsif($table eq 'picasa_photo'){
+      $update_row_count = $self->db->update($table, { ignore_flag => $flag }, { img_std_url => $img_url, picasa_user_id => $user->picasa_id } );
+    }
+
+    return $self->render_json({status=>'ng', text=>'nothing to update.' }) unless $update_row_count;
+    return $self->render_json({status=>'ok', img=>$img_url });
+  });
 
   $r->any('/create_zip/' => sub{
     my $self = shift;

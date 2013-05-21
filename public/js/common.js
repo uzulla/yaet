@@ -31,6 +31,14 @@ function unblock() {
     $.unblockUI();
 }
 
+function indicate_progress(){
+    $("#non-modal-indicator").fadeIn();
+}
+
+function deindicate_progress(){
+    $("#non-modal-indicator").fadeOut();
+}
+
 //for InternetExplorer(don't have console.log())
 if(typeof console != 'object'){ var console = {'log': function(){}}; } // hehe
 
