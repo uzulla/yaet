@@ -40,3 +40,9 @@ body {
 .marketing p + h4 {
   margin-top: 28px;
 }
+
+
+/* tailf */
+img.ignore {
+  opacity: 0.1;
+}

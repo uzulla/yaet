@@ -17,6 +17,7 @@ CREATE TABLE user_account(
 DROP TABLE instagram_photo;
 CREATE TABLE instagram_photo(
     id integer PRIMARY KEY,
+    ignore_flag integer DEFAULT 0,
     instagram_user_id text,
     instagram_photo_id text,
     link text,
@@ -33,6 +34,7 @@ CREATE TABLE instagram_photo(
 DROP TABLE facebook_photo;
 CREATE TABLE facebook_photo(
     id integer PRIMARY KEY,
+    ignore_flag integer DEFAULT 0,
     facebook_user_id text,
     facebook_object_id text,
     img_std_url text,
@@ -47,6 +49,7 @@ CREATE TABLE facebook_photo(
 DROP TABLE picasa_photo;
 CREATE TABLE picasa_photo(
     id integer PRIMARY KEY,
+    ignore_flag integer DEFAULT 0,
     picasa_user_id text,
     picasa_gphoto_id text,
     img_std_url text,
@@ -65,3 +68,8 @@ CREATE TABLE session (
         UNIQUE(sid)
     );
 COMMIT;
+
+-- 2013/05/21
+-- ALTER TABLE instagram_photo ADD COLUMN ignore_flag integer DEFAULT 0;
+-- ALTER TABLE picasa_photo ADD COLUMN ignore_flag integer DEFAULT 0;
+-- ALTER TABLE facebook_photo ADD COLUMN ignore_flag integer DEFAULT 0;

@@ -18,131 +18,29 @@
 
   <div class="jumbotron">
     <a class="btn btn-large btn-success" href="#" onclick="track_update_data();updateData()">update data.</a>
-
 % if ($instagram_photo_list) {
 %   foreach my $i (@$instagram_photo_list) {
+%     my $ignore_css = ($i->ignore_flag) ? 'ignore' : ''; 
       <div style="position:relative; display:inline-block; width:160px; height:160px;">
-        <img src="img/grey.gif" width="150" height="150" data-original="<%= $i->img_tmb_url %>" onclick="touchImg(event)" data-large-image-url="<%= $i->img_std_url %>" class="photo" >
+        <img src="img/grey.gif" width="150" height="150" data-original="<%= $i->img_tmb_url %>" data-source-table="instagram_photo" data-large-image-url="<%= $i->img_std_url %>" class="photo <%= $ignore_css %>" >
       </div>
 %   }   
 % }
+  </div>
 
+  <div style="position:fixed; top:10px; left:20px; text-align:center; display:none;" id="non-modal-indicator">
+    <img src="/img/asyncloading.gif" width="150"><br>
+    Saving...
   </div>
 
 <form id="erase_form" action="<%= url_for('/erase'); %>" method="post"></form>
 <script src="//cdn.jsdelivr.net/jquery.lazyload/1.8.4/jquery.lazyload.min.js"></script>
 <script src="js/common.js"></script>
+<script src="/js/mypage.js"></script>
 <script>
-function updateData(){
-    (function(){
-        $.ajax({
-            url: '<%= url_for('/update_photo'); %>',
-            type: 'GET',
-            cache: false,
-            timeout: 300000,
-            data: {
-            },
-            success:function(data){
-                if(data.status != 'ok'){
-                    alert("失敗しました / fail")
-                }
-                location.href="<%= url_for('/mypage'); %>";
-            },
-            error:function(jqXHR, textStatus, errorThrown){
-                alert('失敗しました / fail');
-            },
-            beforeSend:function(){ block(); },
-            complete:function(){ unblock(); },
-            dataType: 'json'
-        });
-    })();
-}
-
-function downloadTlt(book_title, list){
-    track_download_tlt_file();
-    (function(book_title, list){
-        $.ajax({
-            url: '<%= url_for('/create_zip'); %>',
-            type: 'POST',
-            cache: false,
-            timeout: 300000,
-            data: {
-                book_title: book_title,
-                images: list
-            },
-            success:function(data){
-                if(data.status != 'ok'){
-                    alert("失敗しました / fail")
-                }
-                location.href=data.url;
-            },
-            error:function(jqXHR, textStatus, errorThrown){
-                alert('失敗しました / fail');
-            },
-            beforeSend:function(){ block(); },
-            complete:function(){ unblock(); },
-            dataType: 'json'
-        });
-    })(book_title, list);
-}
-
-function eraseData(){
-    if(confirm('本当に初期化しますか？ / really?')){
-        $('#erase_form').submit();
-    }
-}
-
-function autoSelectFromStart(){
-    var tolot_max_page_num = 62;
-    photo_elms = $(".photo").get().reverse();
-
-    var i = 1;
-    var page = 1;
-    console.log('-start-');
-    var tmp_book_set = [];
-    var book_set_list = [];
-    $.each(photo_elms, function(){
-        //console.log('---');
-        //console.log($(this).attr('data-large-image-url'));
-        //console.log('page:'+page+'/num'+i);
-
-        $("span", $(this).parent()).text(i);
-
-        tmp_book_set.push($(this).attr('data-large-image-url'));
-
-        i++;
-        if(i>tolot_max_page_num){
-            var dl_link = $('<a class="btn btn-large btn-success">download #'+page+' tlt set</a>');
-            dl_link.attr('data-img-url-list', tmp_book_set.join(','));
-            dl_link.click( (function(page){ return function(){
-                if(!(book_title = prompt('Please set Photo book Title / タイトルを入力してください', 'from instagram #'+page))){
-                    return false;
-                }
-                var list = $(this).attr('data-img-url-list').split(',');
-                downloadTlt(book_title, list);
-                return false;
-            }})(page)
-            );
-            dl_link.attr('href', '#');
-
-            $(this).parent().before($('<div style="text-align:center;padding:10px;margin:10px;"><hr></div>').append(dl_link));
-
-            book_set_list.push(tmp_book_set);
-            tmp_book_set = [];
-
-            i=1;
-            page++;
-        }
-
-    });
-    //console.log(book_set_list);
-    //console.log(tmp_book_set);
-    //console.log('-end-');
-}
-
-$(function () {
-    autoSelectFromStart();
-    $("img.photo").lazyload();
-});
-
+var URL_CREATE_ZIP = '<%= url_for('/create_zip'); %>';
+var URL_UPDATE_DATA = '<%= url_for('/update_photo'); %>';
+var URL_MYPAGE = '<%= url_for('/mypage'); %>';
+var URL_SET_IGNORE_FLAG = '<%= url_for('/set_ignore_flag/'); %>';
+var PHOTO_BOOK_TITLE_PREFIX = 'from instagram #';
 </script>

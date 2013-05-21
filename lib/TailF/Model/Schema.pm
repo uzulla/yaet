@@ -44,6 +44,7 @@ table {
     pk 'id';
     columns qw( 
         id
+        ignore_flag
         instagram_user_id
         instagram_photo_id
         link
@@ -78,6 +79,7 @@ table {
     pk 'id';
     columns qw( 
         id
+        ignore_flag
         facebook_user_id
         facebook_object_id
         img_std_url
@@ -110,6 +112,7 @@ table {
     pk 'id';
     columns qw( 
         id
+        ignore_flag
         picasa_user_id
         picasa_gphoto_id
         img_std_url
@@ -135,7 +138,5 @@ table {
         }
     };
 };
-
-
 
 1;

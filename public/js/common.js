@@ -2,6 +2,7 @@ var loading_images = [
     '/img/loading0.gif',
     '/img/loading1.gif',
     '/img/loading2.gif',
+    '/img/asyncloading2.gif'
 ];
 $(function () {
     $.each(loading_images,function (){
@@ -29,6 +30,14 @@ function block() {
 
 function unblock() {
     $.unblockUI();
+}
+
+function indicate_progress(){
+    $("#non-modal-indicator").fadeIn();
+}
+
+function deindicate_progress(){
+    $("#non-modal-indicator").fadeOut();
 }
 
 //for InternetExplorer(don't have console.log())
