@@ -47,9 +47,10 @@
   </div>
 
 <form id="erase_form" action="<%= url_for('/erase'); %>" method="post"></form>
-<script src="//cdn.jsdelivr.net/jquery.lazyload/1.8.4/jquery.lazyload.min.js"></script>
+<script src="/js/jquery.lazyload.min.js"></script>
 <script src="/js/common.js"></script>
 <script src="/js/mypage.js"></script>
+<script src="/js/jquery.blockUI.js"></script>
 <script>
 var URL_CREATE_ZIP = '<%= url_for('/create_zip'); %>';
 var URL_UPDATE_DATA = '<%= url_for('/update_photo/picasa'); %>';
