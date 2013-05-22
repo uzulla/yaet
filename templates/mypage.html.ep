@@ -22,7 +22,7 @@
 %   foreach my $i (@$instagram_photo_list) {
 %     my $ignore_css = ($i->ignore_flag) ? 'ignore' : ''; 
       <div style="position:relative; display:inline-block; width:160px; height:160px;">
-        <img src="img/grey.gif" width="150" height="150" data-original="<%= $i->img_tmb_url %>" data-source-table="instagram_photo" data-large-image-url="<%= $i->img_std_url %>" class="photo <%= $ignore_css %>" >
+        <img src="/img/grey.gif" width="150" height="150" data-original="<%= $i->img_tmb_url %>" data-source-table="instagram_photo" data-large-image-url="<%= $i->img_std_url %>" class="photo <%= $ignore_css %>" >
       </div>
 %   }   
 % }
@@ -34,9 +34,10 @@
   </div>
 
 <form id="erase_form" action="<%= url_for('/erase'); %>" method="post"></form>
-<script src="//cdn.jsdelivr.net/jquery.lazyload/1.8.4/jquery.lazyload.min.js"></script>
-<script src="js/common.js"></script>
+<script src="/js/jquery.lazyload.min.js"></script>
+<script src="/js/common.js"></script>
 <script src="/js/mypage.js"></script>
+<script src="/js/jquery.blockUI.js"></script>
 <script>
 var URL_CREATE_ZIP = '<%= url_for('/create_zip'); %>';
 var URL_UPDATE_DATA = '<%= url_for('/update_photo'); %>';

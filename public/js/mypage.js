@@ -67,13 +67,13 @@ function autoSelectFromStart(){
     var page = 1;
     var tmp_book_set = [];
     var book_set_list = [];
+
     $.each(photo_elms, function(){
         //console.log('---');
         //console.log($(this).attr('data-large-image-url'));
         //console.log('page:'+page+'/num'+i);
 
         $("span", $(this).parent()).text(i).addClass('autoSel');
-
         tmp_book_set.push($(this).attr('data-large-image-url'));
 
         i++;
@@ -91,7 +91,8 @@ function autoSelectFromStart(){
             );
             dl_link.attr('href', '#');
 
-            $(this).parent().before($('<div style="text-align:center;padding:10px;margin:10px;"><hr></div>').addClass('autoSel').append(dl_link));
+            $(this).parent().before($('<div style="text-align:center;padding:10px;margin:10px;"><hr></div>')
+                .addClass('autoSel').append(dl_link));
 
             book_set_list.push(tmp_book_set);
             tmp_book_set = [];
