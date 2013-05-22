@@ -67,7 +67,6 @@ function autoSelectFromStart(){
     var page = 1;
     var tmp_book_set = [];
     var book_set_list = [];
-    var photo_elm_set = [];
 
     $.each(photo_elms, function(){
         //console.log('---');
@@ -76,7 +75,6 @@ function autoSelectFromStart(){
 
         $("span", $(this).parent()).text(i).addClass('autoSel');
         tmp_book_set.push($(this).attr('data-large-image-url'));
-        photo_elm_set.push($(this));
 
         i++;
         if(i>tolot_max_page_num){
@@ -93,29 +91,11 @@ function autoSelectFromStart(){
             );
             dl_link.attr('href', '#');
 
-            var collapse_link = $('<a class="btn btn-large btn-success">[+ open contain img]</a>');
-            collapse_link.click( (function(photo_elm_set ,collapse_link ){ return function(){
-                $.each(photo_elm_set, function(){
-                    $(this).parent().show();
-                    if(photo_elm_set[photo_elm_set.length-1]==this){
-                        $(window).trigger("scroll");//for lazyload;
-                    }
-                });
-                collapse_link.remove();
-                return false;
-            }})(photo_elm_set ,collapse_link ) ); 
-            collapse_link.attr('href', '#');
-
             $(this).parent().before($('<div style="text-align:center;padding:10px;margin:10px;"><hr></div>')
-                .addClass('autoSel').append(dl_link).append('&nbsp;').append(collapse_link));
-
-            $.each(photo_elm_set, function(){
-                $(this).parent().hide();
-            });
+                .addClass('autoSel').append(dl_link));
 
             book_set_list.push(tmp_book_set);
             tmp_book_set = [];
-            photo_elm_set = [];
 
             i=1;
             page++;
