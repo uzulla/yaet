@@ -1,4 +1,4 @@
-package TailF;
+package Yaet;
 use Mojo::Base 'Mojolicious';
 use Mojolicious::Plugin::Web::Auth::OAuth2;
 
@@ -15,12 +15,10 @@ use Furl;
 use JSON qw/encode_json decode_json/;
 use Data::Dumper;
 
-use TailF::Model;
+use Yaet::Model;
 use CFE::TOLOT::PhotoBook;
 
-use TailF::Controller::Facebook;
-use TailF::Controller::Picasa;
-use TailF::Controller::Instagram;
+use Yaet::Controller::Facebook;
 
 sub startup {
   my $self = shift;
@@ -30,7 +28,7 @@ sub startup {
   my $config = $self->plugin('Config');
   $self->secret($config->{mojo_secret});
 
-  my $db = TailF::Model->new(+{connect_info => ['dbi:SQLite:'.$FindBin::RealBin.'/db.db','','']});
+  my $db = Yaet::Model->new(+{connect_info => ['dbi:SQLite:'.$FindBin::RealBin.'/db.db','','', {sqlite_unicode=>1}]});
 
   $self->helper( db => sub {return $db} );
 
@@ -50,20 +48,6 @@ sub startup {
     }
   );
 
-  #/auth/instagram/authenticate
-  $self->plugin( 'Web::Auth',
-      module      => 'Instagram',
-      key         => $config->{instagram}->{client_id},
-      secret      => $config->{instagram}->{client_secret},
-      on_error    => sub {
-          my ( $c, @__ ) = @_;
-          my ( $error_info ) = @__;
-          $self->app->log->info("Instagram auth error $error_info");
-          $c->redirect_to('/');
-      },
-      on_finished => \&TailF::Controller::Instagram::on_auth_finished,
-  );  
-
   #/auth/facebook/authenticate
   $self->plugin( 'Web::Auth',
       module      => 'Facebook',
@@ -76,21 +60,7 @@ sub startup {
           $self->app->log->info("Facebook auth error $error_info");
           $c->redirect_to('/');
       },
-      on_finished => \&TailF::Controller::Facebook::on_auth_finished,
-  );  
-
-  #/auth/google/authenticate
-  $self->plugin( 'Web::Auth',
-      module      => 'Google',
-      key         => $config->{google}->{client_id},
-      secret      => $config->{google}->{client_secret},
-      on_error    => sub {
-          my ( $c, @__ ) = @_;
-          my ( $error_info ) = @__;
-          $self->app->log->info("Picasa auth error $error_info");
-          $c->redirect_to('/');
-      },
-      on_finished => \&TailF::Controller::Picasa::on_auth_finished,
+      on_finished => \&Yaet::Controller::Facebook::on_auth_finished,
   );  
 
   my $r = $self->routes;
@@ -98,13 +68,7 @@ sub startup {
   $r->any('/' => sub {
     my $self = shift;
     if($self->stash('session')->data('user')){
-      if($self->stash('session')->data('user')->{instagram_id}){
-        $self->redirect_to('/mypage')
-      }elsif($self->stash('session')->data('user')->{facebook_id}){
-        $self->redirect_to('/mypage/facebook')
-      }elsif($self->stash('session')->data('user')->{picasa_id}){
-        $self->redirect_to('/mypage/picasa')
-      }
+      $self->redirect_to('/facebook/album/list')
     }
     return $self->render
   } => 'index');
@@ -116,9 +80,8 @@ sub startup {
       $self->redirect_to('/');
       return;
     }
-    my $delete_instagram_photo_num = $self->db->delete('instagram_photo', +{instagram_user_id=> $user->{instagram_id}});
-    my $delete_facebook_photo_num = $self->db->delete('facebook_photo', +{facebook_user_id=> $user->{facebook_id}});
-    my $delete_picasa_photo_num = $self->db->delete('picasa_photo', +{picasa_user_id=> $user->{picasa_id}});
+    my $delete_facebook_photo_num = $self->db->delete('facebook_photo', +{facebook_user_id=> $user->{facebook_user_id}});
+    my $delete_facebook_album_num = $self->db->delete('facebook_album', +{facebook_user_id=> $user->{facebook_user_id}});
     my $delete_user_account_num = $self->db->delete('user_account', +{id=> $user->{id}});
     $self->redirect_to('/auth/logout');
   });
@@ -143,13 +106,7 @@ sub startup {
     return $self->render_json({status=>'ng', text=>'session not found.' }) unless $user;
 
     my $update_row_count=0;
-    if($table eq 'instagram_photo'){
-      $update_row_count = $self->db->update($table, { ignore_flag => $flag }, { img_std_url => $img_url, instagram_user_id => $user->instagram_id } );
-    }elsif($table eq 'facebook_photo'){
-      $update_row_count = $self->db->update($table, { ignore_flag => $flag }, { img_std_url => $img_url, facebook_user_id => $user->facebook_id } );
-    }elsif($table eq 'picasa_photo'){
-      $update_row_count = $self->db->update($table, { ignore_flag => $flag }, { img_std_url => $img_url, picasa_user_id => $user->picasa_id } );
-    }
+    $update_row_count = $self->db->update($table, { ignore_flag => $flag }, { img_std_url => $img_url, facebook_user_id => $user->facebook_user_id } );
 
     return $self->render_json({status=>'ng', text=>'nothing to update.' }) unless $update_row_count;
     return $self->render_json({status=>'ok', img=>$img_url });
@@ -170,7 +127,8 @@ sub startup {
       zip_output_dir=> "$ENV{MOJO_HOME}/public/download_temporary",
       temporary_dir => "$ENV{MOJO_HOME}/tmp",
       data_base_dir => "$ENV{MOJO_HOME}/data/tolot",
-      debug         => 1
+      debug         => 1,
+      check_img_num => 0,
     } );
 
     $tlt->set_image_file_list_by_url_list(@images);
@@ -180,12 +138,10 @@ sub startup {
     return $self->render_json({status=>'ok', url=>"$config->{base_url}download_temporary/$temporary_zip_filename"});
   });
 
-  $r->any('/mypage' => \&TailF::Controller::Instagram::mypage => 'mypage');
-  $r->any('/update_photo' => \&TailF::Controller::Instagram::update_photo );
-  $r->any('/mypage/picasa' => \&TailF::Controller::Picasa::mypage => 'mypage_picasa');
-  $r->any('/update_photo/picasa' => \&TailF::Controller::Picasa::update_photo);
-  $r->any('/mypage/facebook' => \&TailF::Controller::Facebook::mypage => 'mypage_facebook' );
-  $r->any('/update_photo/facebook' => \&TailF::Controller::Facebook::update_photo );
+  $r->any('/facebook/album/list' => \&Yaet::Controller::Facebook::album_list => 'facebook_album_list' );
+  $r->any('/facebook/album/update' => \&Yaet::Controller::Facebook::album_update );
+  $r->any('/facebook/album/show/:aid' => \&Yaet::Controller::Facebook::album_show => 'facebook_album_show' );
+  $r->any('/facebook/album/show/:aid/update_photo' => \&Yaet::Controller::Facebook::album_photo_update );
 
 }
 1;

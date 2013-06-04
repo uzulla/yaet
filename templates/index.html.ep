@@ -9,46 +9,34 @@
       <li><a href="http://tailf.tumblr.com/" target="_blank">blog</a>
       <li><a href="/help.html">Help</a></li>
       <li><a href="http://twitter.com/uzulla/">Contact</a></li>
-      <li><a href="http://twitter.com/intent/tweet?text=@uzulla%20%23tailf%20" target="_blank">Request</a></li>
+      <li><a href="http://twitter.com/intent/tweet?text=@uzulla%20%23yaet%20" target="_blank">Request</a></li>
     </ul>
     
 
-    <h3 class="muted">TAILF beta</h3>
+    <h3 class="muted">YAET alpha</h3>
   </div>
 
   <hr>
 
   <div class="jumbotron">
-    <h1>TAILF</h1>
-    <p class="lead">Dump Instagram(or Facebook, Picasa Google+) photos into real world easily.</p>
-    <p>
-      <a class="btn btn-large btn-success" href="<%= url_for('/auth/instagram/authenticate'); %>" onclick="track_login()">login with Instagram</a>
-    </p>
-    <p>or</p>
+    <h1>YAET</h1>
+    <p class="lead">yaet!</p>
     <p>
       <a class="btn btn-large btn-success" href="<%= url_for('/auth/facebook/authenticate'); %>" onclick="track_login()">login with Facebook</a>
     </p>
-    <p>or</p>
-    <p>
-      <a class="btn btn-large btn-success" href="<%= url_for('/auth/google/authenticate'); %>" onclick="track_login()">login with Google(Picasa/Google Plus)</a>
-    </p>
-
   </div>
 
 
   <div class="jumbotron">
     <h1>HOW?</h1>
-    <p class="lead">1, <a href="<%= url_for('/auth/instagram/authenticate'); %>" onclick="track_login()">login with Instagram</a>.</p>
-    <p class="lead">2, download generated .tlt file.</p>
-    <p class="lead">3, open and order with <a href="http://tolot.com/app/pc/index.html" target="_blank">TOLOT PC/MAC client</a>.</p>
-    <p class="lead">4, wait a few days!!.</p>
+    <p class="lead">0, under construction.</p>
   </div>
 
 
   <div class="footer">
     <ul class="nav nav-pills pull-right">
-      <li style="margin-top:8px;"><iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftailf.cfe.jp%2F&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=207407482628591" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:110px; height:21px;" allowTransparency="true"></iframe></li>
-      <li style="margin-top:8px;"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://tailf.cfe.jp/" data-text="TAILF - create TOLOT photo book from instagram" data-via="uzulla" data-lang="ja" data-hashtags="tailf">ツイート</a>
+      <li style="margin-top:8px;"><iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fyaet.cfe.jp%2F&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=207407482628591" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:110px; height:21px;" allowTransparency="true"></iframe></li>
+      <li style="margin-top:8px;"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://yaet.cfe.jp/" data-text="YAET - create TOLOT photo book from facebook album" data-via="uzulla" data-lang="ja" data-hashtags="yaet">ツイート</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></li>
     </ul>
     <p class="muted">&copy; uzulla</p>

@@ -1,7 +1,7 @@
-function updateData(){
+function updateAlbumPhotoData(){
     (function(){
         $.ajax({
-            url: URL_UPDATE_DATA,
+            url: URL_UPDATE_ALBUM_PHOTO_DATA,
             type: 'GET',
             cache: false,
             timeout: 300000,
@@ -11,7 +11,7 @@ function updateData(){
                 if(data.status != 'ok'){
                     alert("失敗しました / fail")
                 }
-                location.href = URL_MYPAGE;
+                location.href = URL_THIS_PAGE;
             },
             error:function(jqXHR, textStatus, errorThrown){
                 alert('失敗しました / fail');
@@ -58,53 +58,61 @@ function eraseData(){
 }
 
 function autoSelectFromStart(){
-    $(".autoSel").remove();
-    console.log('-autoSelectFromStart-');
+    $("#download_btn_list").html('');
+    //console.log('-autoSelectFromStart-');
     var tolot_max_page_num = 62;
-    photo_elms = $(".photo:not(.ignore)").get().reverse();
+    photo_elms = $(".photo:not(.ignore)").get();
 
     var i = 1;
-    var page = 1;
     var tmp_book_set = [];
     var book_set_list = [];
 
     $.each(photo_elms, function(){
-        //console.log('---');
-        //console.log($(this).attr('data-large-image-url'));
-        //console.log('page:'+page+'/num'+i);
-
-        $("span", $(this).parent()).text(i).addClass('autoSel');
         tmp_book_set.push($(this).attr('data-large-image-url'));
 
-        i++;
-        if(i>tolot_max_page_num){
-            var dl_link = $('<a class="btn btn-large btn-success">download #'+page+' tlt set</a>');
-            dl_link.attr('data-img-url-list', tmp_book_set.join(','));
-            dl_link.click( (function(page){ return function(){
-                if(!(book_title = prompt('Please set Photo book Title / タイトルを入力してください', PHOTO_BOOK_TITLE_PREFIX+page))){
-                    return false;
-                }
-                var list = $(this).attr('data-img-url-list').split(',');
-                downloadTlt(book_title, list);
-                return false;
-            }})(page)
-            );
-            dl_link.attr('href', '#');
-
-            $(this).parent().before($('<div style="text-align:center;padding:10px;margin:10px;"><hr></div>')
-                .addClass('autoSel').append(dl_link));
-
+        if(i>=tolot_max_page_num){
             book_set_list.push(tmp_book_set);
             tmp_book_set = [];
-
-            i=1;
-            page++;
+            i=0;
         }
-
+        i++;
     });
-    //console.log(book_set_list);
-    //console.log(tmp_book_set);
-    //console.log('-end-');
+    if(tmp_book_set.length>0){
+        book_set_list.push(tmp_book_set);
+    }
+
+
+    var book_num = 1;
+    $.each(book_set_list, function(){
+        var book_set = this;
+        var add_class = '';
+        if(book_set.length==62){
+            add_class=" btn-success ";
+        }
+        var dl_link = $('<a class="btn btn-large '+add_class+'">download #'+book_num+' tlt set '+book_set.length+'/62</a>');
+
+        dl_link.attr('data-img-url-list', book_set.join(','));
+
+        dl_link.click( (function(book_num){ return function(){
+            var list = $(this).attr('data-img-url-list').split(',');
+            if(!(book_title = prompt('Please set Photo book Title / タイトルを入力してください\n(TOLOTに読み込ませた後、変更が可能です)', PHOTO_BOOK_TITLE_PREFIX+book_num))){
+                return false;
+            }
+            if(book_title.length>18){
+                alert("タイトルが18文字以上です。TOLOTで読み込ませる際にエラーがでるかもしれません\n(TOLOTに読み込ませた後、変更が可能です)");
+            }
+
+            downloadTlt(book_title, list);
+            return false;
+        }})(book_num) );
+
+        dl_link.attr('href', '#');
+
+        $("#download_btn_list").append(dl_link);
+
+        book_num++;
+    });
+
 }
 
 function setIgnoreImg(elm){
@@ -127,7 +135,7 @@ function delayDataSubmit(){
         indicate_progress();
         var d = dataQueue.pop();
         if(d.method=='set_ignore_flag'){
-            console.log(d);
+            //console.log(d);
             $.ajax({
                 url: URL_SET_IGNORE_FLAG,
                 type: 'POST',

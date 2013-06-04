@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TAILF - create tolot photo book from Instagram(or Facebook, Picasa Google+)</title>
+        <title>YAET - yet another exporter to tolot</title>
 
         <meta property="og:type" content="product">
-        <meta property="og:site_name" content="TAILF">
+        <meta property="og:site_name" content="YAET">
         <meta property="fb:admins" content="574803063">
 
-        <meta property="og:url" content="http://tailf.cfe.jp/">
-        <meta property="og:title" content="TAILF - create TOLOT photo book from Instagram(or Facebook, Picasa Google+)">
-        <meta property="og:image" content="http://tailf.cfe.jp/img/ogp.png">
-        <meta property="og:description" content="Instagram, Facebook, Picasa Google+からフォトブックサービスのTOLOTで超手軽に印刷できるデータを生成します。">
+        <meta property="og:url" content="http://yaet.cfe.jp/">
+        <meta property="og:title" content="YAET - yet another exporter to tolot">
+        <meta property="og:image" content="http://yaet.cfe.jp/img/ogp.png">
+        <meta property="og:description" content="作成中です">
 
-        <meta name="description" content="Instagram, Facebook, Picasa Google+からフォトブックサービスのTOLOTで超手軽に印刷できるデータを生成します。">
-        <meta name="keywords" content="TOLOT,フォトブック,インスタグラム,Photobook,Photo,Instagram,トロット,写真,カメラ,Google+,Picasa,Facebook">
+        <meta name="description" content="作成中です">
+        <meta name="keywords" content="TOLOT,フォトブック,Photobook,Photo,トロット,写真,カメラ,Facebook">
 
         <!-- Bootstrap -->
         <link href="/css/bootstrap-amelia.css" rel="stylesheet" media="screen">

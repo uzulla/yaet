@@ -1,4 +1,4 @@
-package TailF::Model::Schema;
+package Yaet::Model::Schema;
 use strict;
 use warnings;
 
@@ -12,12 +12,8 @@ table {
         id
         name 
         avatar_img_url
-        instagram_token 
-        instagram_id
         facebook_token
-        facebook_id
-        picasa_token 
-        picasa_id
+        facebook_user_id
         created_at
         updated_at 
         );
@@ -37,24 +33,18 @@ table {
     };
 };
 
-
-
 table {
-    name 'instagram_photo';
+    name 'facebook_album';
     pk 'id';
     columns qw( 
         id
-        ignore_flag
-        instagram_user_id
-        instagram_photo_id
+        facebook_user_id
+        facebook_object_id
+        name
         link
-        img_std_url
-        img_std_size
-        img_low_url
-        img_low_size
-        img_tmb_url
-        img_tmb_size
+        aid
         created_time
+        modified_time
         created_at
         updated_at
         );
@@ -81,6 +71,7 @@ table {
         id
         ignore_flag
         facebook_user_id
+        aid
         facebook_object_id
         img_std_url
         img_std_size
@@ -88,38 +79,6 @@ table {
         img_tmb_size
         created_time
         modified_time
-        created_at
-        updated_at
-        );
-    inflate qr/_at$/ => sub {
-        return DateTime::Format::MySQL->parse_datetime(shift);
-    };
-    deflate qr/updated_at/ => sub {
-        return DateTime::Format::MySQL->format_datetime(DateTime->now());
-    };
-    deflate qr/created_at/ => sub {
-        my $dt = shift;
-        if($dt){
-            return DateTime::Format::MySQL->format_datetime($dt);
-        }else{
-            return DateTime::Format::MySQL->format_datetime(DateTime->now());
-        }
-    };
-};
-
-table {
-    name 'picasa_photo';
-    pk 'id';
-    columns qw( 
-        id
-        ignore_flag
-        picasa_user_id
-        picasa_gphoto_id
-        img_std_url
-        img_std_size
-        img_tmb_url
-        img_tmb_size
-        created_time
         created_at
         updated_at
         );

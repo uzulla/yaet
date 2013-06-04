@@ -8,4 +8,4 @@ use Mojolicious::Commands;
 $ENV{MOJO_HOME} = "$FindBin::RealBin";
 
 # Start command line interface for application
-Mojolicious::Commands->start_app('TailF');
+Mojolicious::Commands->start_app('Yaet');

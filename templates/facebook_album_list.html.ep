@@ -1,0 +1,46 @@
+% layout 'default';
+
+<div class="container-narrow">
+  <div class="masthead">
+    <ul class="nav nav-pills pull-right">
+      <li><a href="/about.html">About</a></li>
+      <li><a href="http://tailf.tumblr.com/" target="_blank">blog</a>
+      <li><a href="/help.html">Help</a></li>
+      <li><a href="http://twitter.com/uzulla/">Contact</a></li>
+      <li><a href="http://twitter.com/intent/tweet?text=@uzulla%20#yaet%20" target="_blank">Request</a></li>
+      <li><a href="#" onclick="eraseData();return false;">Erase</a></li>
+      <li><a href="<%= url_for('/auth/logout'); %>">logout</a></li>
+    </ul>
+    <h3 class="muted">YAET (alpha)</h3>
+  </div>
+
+  <hr>
+
+  <div class="jumbotron">
+    <a class="btn btn-large btn-success" href="#" onclick="track_update_data();updateAlbumData()">reload albums.</a><br>
+% if ($album_list) {
+%   foreach my $i (@$album_list) {
+      <div>
+        <a href="<%= url_for('/facebook/album/show/'.$i->aid); %>">
+          <img src="https://graph.facebook.com/<%=$i->facebook_object_id%>/picture?access_token=<%=$user->{facebook_token}%>" width="150" height="150" class="photo" >
+          <%=$i->name%>
+        </a>
+      </div>
+%   }   
+% }
+  </div>
+
+  <div style="position:fixed; top:10px; left:20px; text-align:center; display:none;" id="non-modal-indicator">
+    <img src="/img/asyncloading.gif" width="150"><br>
+    Saving...
+  </div>
+
+<form id="erase_form" action="<%= url_for('/erase'); %>" method="post"></form>
+<script src="/js/jquery.lazyload.min.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/album_list.js"></script>
+<script src="/js/jquery.blockUI.js"></script>
+<script>
+var URL_UPDATE_ALBUM_DATA = '<%= url_for('/facebook/album/update/'); %>';
+var URL_THIS_PAGE = '<%= url_for('/facebook/album/list/'); %>';
+</script>

@@ -1,6 +1,6 @@
 .DS_Store
 db.db
-tail_f.conf
+yaet.conf
 tmp/*
 tool/theme_img_dump/*
 public/download_temporary/*

@@ -4,18 +4,18 @@
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-ga('create', 'UA-19063513-5', 'cfe.jp');
-ga('send', 'pageview');
+//ga('create', 'UA-19063513-5', 'cfe.jp');
+//ga('send', 'pageview');
 
 //define helper
 function track_login(e){
-    ga('send', 'event', 'operation', 'login', 'login button');
+    //ga('send', 'event', 'operation', 'login', 'login button');
 }
 
 function track_update_data(e){
-    ga('send', 'event', 'operation', 'update_data', 'update data');
+    //ga('send', 'event', 'operation', 'update_data', 'update data');
 }
 
 function track_download_tlt_file(e){
-    ga('send', 'event', 'operation', 'download_tlt_file', 'download tlt file');
+    //ga('send', 'event', 'operation', 'download_tlt_file', 'download tlt file');
 }

@@ -7,20 +7,31 @@
       <li><a href="http://tailf.tumblr.com/" target="_blank">blog</a>
       <li><a href="/help.html">Help</a></li>
       <li><a href="http://twitter.com/uzulla/">Contact</a></li>
-      <li><a href="http://twitter.com/intent/tweet?text=@uzulla%20#tailf%20" target="_blank">Request</a></li>
+      <li><a href="http://twitter.com/intent/tweet?text=@uzulla%20#yaet%20" target="_blank">Request</a></li>
       <li><a href="#" onclick="eraseData();return false;">Erase</a></li>
       <li><a href="<%= url_for('/auth/logout'); %>">logout</a></li>
     </ul>
-    <h3 class="muted">TAILF (facebook)</h3>
+    <h3 class="muted">YAET (alpha)</h3>
   </div>
+
+    <a class="btn btn-large btn-success" href="<%= url_for('/facebook/album/list/'); %>">back to album list.</a><br>
+
+  <hr>
+  サムネイル：<img src="https://graph.facebook.com/<%=$album->facebook_object_id%>/picture?access_token=<%=$user->{facebook_token}%>" width="150" height="150" ><br>
+  アルバム名：<%=$album->name%>
 
   <hr>
 
+    <a class="btn btn-large btn-success" href="#" onclick="track_update_data();updateAlbumPhotoData()">reload photos.</a><br>
+    <div id="download_btn_list">
+
+    </div>
+
+  <hr>
   <div class="jumbotron">
-    <a class="btn btn-large btn-success" href="#" onclick="track_update_data();updateData()">update data.</a>
-% if ($facebook_photo_list) {
-%   foreach my $i (@$facebook_photo_list) {
-%     my $ignore_css = ($i->ignore_flag) ? 'ignore' : ''; 
+% if ($photo_list) {
+%   foreach my $i (@$photo_list) {
+%     my $ignore_css = ($i->ignore_flag) ? 'ignore' : '';
       <div style="position:relative; display:inline-block; width:160px; height:160px;">
         <img src="/img/grey.gif" width="150" height="150" data-original="<%= $i->img_tmb_url %>" data-source-table="facebook_photo" data-large-image-url="<%= $i->img_std_url %>" class="photo <%= $ignore_css %>" >
       </div>
@@ -36,12 +47,12 @@
 <form id="erase_form" action="<%= url_for('/erase'); %>" method="post"></form>
 <script src="/js/jquery.lazyload.min.js"></script>
 <script src="/js/common.js"></script>
-<script src="/js/mypage.js"></script>
+<script src="/js/album_show.js"></script>
 <script src="/js/jquery.blockUI.js"></script>
 <script>
+var URL_UPDATE_ALBUM_PHOTO_DATA = '<%= url_for('/facebook/album/show/'.$album->aid.'/update_photo'); %>';
+var URL_THIS_PAGE = '<%= url_for('/facebook/album/show/'.$album->aid); %>';
 var URL_CREATE_ZIP = '<%= url_for('/create_zip'); %>';
-var URL_UPDATE_DATA = '<%= url_for('/update_photo/facebook'); %>';
-var URL_MYPAGE = '<%= url_for('/mypage/facebook'); %>';
 var URL_SET_IGNORE_FLAG = '<%= url_for('/set_ignore_flag/'); %>';
-var PHOTO_BOOK_TITLE_PREFIX = 'from facebook #';
+var PHOTO_BOOK_TITLE_PREFIX = '<%=$album->name%> #';
 </script>
