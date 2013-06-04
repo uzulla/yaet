@@ -1,25 +1,17 @@
 {
-    instagram => {
-        client_id     => '',
-        client_secret => ''
-    },
-    google => {
-        client_id     => '.apps.googleusercontent.com',
-        client_secret => ''
-    },
     facebook => {
         app_id => '',
         app_secret => ''
     },
-    mojo_secret => 'secret token',
-    base_url=>'http://hostname:3000/',
+    mojo_secret => 'secret token desuze',
+    base_url=>'http://localhost:3002/',
     db => {
         dsn => 'dbi:SQLite:'.$FindBin::RealBin.'/db.db',
         username => '',
         password => ''
     },
     'hypnotoad' => { # of course optional
-        'listen' => [ 'http://127.0.0.1:3001' ],
+        'listen' => [ 'http://127.0.0.1:3002' ],
         'proxy' => 1,
         heartbeat_timeout => 1200, # very important
         inactivity_timeout => 600, # very important
