@@ -2,7 +2,6 @@ package Yaet;
 use Mojo::Base 'Mojolicious';
 use Mojolicious::Plugin::Web::Auth::OAuth2;
 
-use WebService::Instagram;
 use Net::Twitter::Lite::WithAPIv1_1;
 
 use DateTime;
