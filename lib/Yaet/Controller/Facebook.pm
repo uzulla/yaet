@@ -19,11 +19,35 @@ sub on_auth_finished {
       updated_at=>0 
       } );
     $user = $c->db->single('user_account', +{facebook_user_id=> $account_info->{id}});
+  }else{
+    my $config = $c->app->plugin('Config');
+    $extended_token = getUpdateToken($c, $config->{facebook}->{app_id},$config->{facebook}->{app_secret}, $access_token);
+    $c->app->log->debug('extended token :'.$extended_token);
+    $user->facebook_token($extended_token);
+    $user->update; 
   }
 
   $c->stash('session')->data('user'=>$user->get_columns);
   $c->app->log->info("logged in ".$account_info->{name}." by Facebook");
   $c->redirect_to('/');
+}
+
+sub getUpdateToken {
+    my ($c, $client_id, $client_secret, $facebook_token) = @_;
+
+    my $f = new Furl;
+    my $uri = URI->new("https://graph.facebook.com");
+    $uri->path( 'oauth/access_token' );
+    $uri->query_form(
+        client_id=>$client_id,
+        client_secret=>$client_secret,
+        grant_type=>"fb_exchange_token",
+        fb_exchange_token => $facebook_token,
+        );
+    my $res = $f->get($uri)->content;
+    #$c->app->log->debug('getUpdateToken res :'.$res);
+    $res =~ /access_token=(.+)&expires=/;
+    return $1;
 }
 
 sub album_show  {
